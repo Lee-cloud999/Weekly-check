@@ -125,8 +125,22 @@ function editingEnd(){isEditing=false;if(pendingCloudRender){pendingCloudRender=
   el.addEventListener('compositionstart',editingStart);
   el.addEventListener('compositionend',()=>{save();});
 });function saveNow(){if(!currentWeekKey)return;clearTimeout(saveTimer);let k=currentWeekKey,d=collect();localSet(k,d);cloudSave(k,d)}
-document.getElementById('prev').onclick=()=>{const oldKey=currentWeekKey,oldData=collect();localSet(oldKey,oldData);clearTimeout(saveTimer);offset--;render();cloudSave(oldKey,oldData)};
-document.getElementById('next').onclick=()=>{const oldKey=currentWeekKey,oldData=collect();localSet(oldKey,oldData);clearTimeout(saveTimer);offset++;render();cloudSave(oldKey,oldData)};
+document.getElementById('prev').onclick=()=>{
+ const oldKey=currentWeekKey,oldData=collect();
+ clearTimeout(saveTimer);
+ localSet(oldKey,oldData);
+ cloudSave(oldKey,oldData);
+ offset--;
+ render();
+};
+document.getElementById('next').onclick=()=>{
+ const oldKey=currentWeekKey,oldData=collect();
+ clearTimeout(saveTimer);
+ localSet(oldKey,oldData);
+ cloudSave(oldKey,oldData);
+ offset++;
+ render();
+};
 function archiveData(){let out=[];for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(!k.startsWith(KEY))continue;let wk=k.slice(KEY.length),d=load(wk);(d.days||[]).forEach((tasks,di)=>(tasks||[]).forEach(t=>{if((t.text||'').trim()){let date=new Date(wk+'T00:00:00');date.setDate(date.getDate()+di);out.push({date:ymd(date),text:t.text,status:+t.status||0})}}))}return out.sort((a,b)=>b.date.localeCompare(a.date))}
 function renderArchive(){
  let q=(document.getElementById('archiveSearch')?.value||'').trim().toLowerCase();
@@ -144,42 +158,15 @@ archiveSearch.addEventListener('input',()=>{archiveSearchClear.style.display=arc
 archiveSearchClear.onclick=()=>{archiveSearch.value='';archiveSearchClear.style.display='none';archiveSearch.focus();renderArchive()};function show(which){save();sessionStorage.setItem(VIEW,which);document.getElementById('planner').classList.toggle('hidden',which!=='week');document.getElementById('archive').classList.toggle('active',which==='archive');document.getElementById('navWeek').classList.toggle('active',which==='week');document.getElementById('navArchive').classList.toggle('active',which==='archive');if(which==='archive')renderArchive()}
 document.getElementById('navWeek').onclick=()=>show('week');document.getElementById('navArchive').onclick=()=>show('archive');
 document.getElementById('cleanupNextWeek').onclick=async()=>{
-  // v29 화면/주차 이동 로직은 그대로 두고, 다음 주 오염 데이터만 정확히 제거한다.
-  if(!currentWeekKey)return;
-  clearTimeout(saveTimer);
-
-  const currentKey=currentWeekKey;
-  const currentData=collect();
-  localSet(currentKey,currentData);
-  await cloudSave(currentKey,currentData);
-
-  const nextMonday=new Date(currentKey+'T00:00:00');
-  nextMonday.setDate(nextMonday.getDate()+7);
-  const nextKey=ymd(nextMonday);
-
-  const localExists=localStorage.getItem(KEY+nextKey)!==null;
-  if(!localExists && !currentUser){
-    alert('다음 주에 저장된 기록이 없어요.');
-    return;
-  }
-
-  if(!confirm(`다음 주(${nextMonday.getMonth()+1}.${nextMonday.getDate()} 시작)에 잘못 복제된 기록을 비울까요?\n이번 주 기록은 그대로 유지됩니다.`))return;
-
-  localStorage.removeItem(KEY+nextKey);
-
-  if(currentUser){
-    try{
-      await deleteDoc(doc(db,'users',currentUser.uid,'weekly_check',nextKey));
-      clearFirebaseError();
-      setSync('동기화됨',true);
-    }catch(e){
-      showFirebaseError('다음 주 기록 정리(deleteDoc)',e);
-      return;
-    }
-  }
-
-  alert('복제된 다음 주 기록을 비웠어요.');
-  if(document.getElementById('archive').classList.contains('active'))renderArchive();
+ saveNow();
+ let base=startOfWeek(new Date());base.setDate(base.getDate()+offset*7+7);let k=ymd(base);
+ let local=localStorage.getItem(KEY+k);
+ if(!local&&!currentUser){alert('다음 주에 저장된 기록이 없어요.');return}
+ if(!confirm('다음 주에 잘못 복제된 기록을 비울까요?\n이번 주 기록은 그대로 유지됩니다.'))return;
+ localStorage.removeItem(KEY+k);
+ if(currentUser){try{await deleteDoc(doc(db,'users',currentUser.uid,'weekly_check',k))}catch(e){showFirebaseError('다음 주 기록 정리(deleteDoc)',e);return}}
+ alert('다음 주 기록을 비웠어요.');
+ if(document.getElementById('archive').classList.contains('active'))renderArchive();
 };
 // account / cloud
 const sheet=document.getElementById('accountSheet'),msg=document.getElementById('authMsg');document.getElementById('accountBtn').onclick=()=>{sheet.classList.add('show');sheet.setAttribute('aria-hidden','false')};document.getElementById('accountClose').onclick=()=>{sheet.classList.remove('show');msg.textContent=''};sheet.onclick=e=>{if(e.target===sheet){sheet.classList.remove('show');msg.textContent=''}};
