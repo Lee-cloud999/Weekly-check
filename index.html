@@ -158,15 +158,27 @@ archiveSearch.addEventListener('input',()=>{archiveSearchClear.style.display=arc
 archiveSearchClear.onclick=()=>{archiveSearch.value='';archiveSearchClear.style.display='none';archiveSearch.focus();renderArchive()};function show(which){save();sessionStorage.setItem(VIEW,which);document.getElementById('planner').classList.toggle('hidden',which!=='week');document.getElementById('archive').classList.toggle('active',which==='archive');document.getElementById('navWeek').classList.toggle('active',which==='week');document.getElementById('navArchive').classList.toggle('active',which==='archive');if(which==='archive')renderArchive()}
 document.getElementById('navWeek').onclick=()=>show('week');document.getElementById('navArchive').onclick=()=>show('archive');
 document.getElementById('cleanupNextWeek').onclick=async()=>{
- saveNow();
- let base=startOfWeek(new Date());base.setDate(base.getDate()+offset*7+7);let k=ymd(base);
- let local=localStorage.getItem(KEY+k);
- if(!local&&!currentUser){alert('다음 주에 저장된 기록이 없어요.');return}
- if(!confirm('다음 주에 잘못 복제된 기록을 비울까요?\n이번 주 기록은 그대로 유지됩니다.'))return;
- localStorage.removeItem(KEY+k);
- if(currentUser){try{await deleteDoc(doc(db,'users',currentUser.uid,'weekly_check',k))}catch(e){showFirebaseError('다음 주 기록 정리(deleteDoc)',e);return}}
- alert('다음 주 기록을 비웠어요.');
- if(document.getElementById('archive').classList.contains('active'))renderArchive();
+  if(!currentWeekKey){alert('현재 주차를 불러온 뒤 다시 눌러주세요.');return}
+  const d=new Date(currentWeekKey+'T00:00:00');
+  d.setDate(d.getDate()+7);
+  const nextKey=ymd(d);
+
+  if(!confirm(`다음 주(${d.getMonth()+1}.${d.getDate()} 시작)에 잘못 복제된 기록을 비울까요?\n이번 주 기록은 그대로 유지됩니다.`))return;
+
+  clearTimeout(saveTimer);
+  localStorage.removeItem(KEY+nextKey);
+
+  if(currentUser){
+    try{
+      await deleteDoc(doc(db,'users',currentUser.uid,'weekly_check',nextKey));
+      clearFirebaseError();
+      setSync('동기화됨',true);
+    }catch(e){
+      showFirebaseError('다음 주 기록 정리',e);
+      return;
+    }
+  }
+  alert('복제된 다음 주 기록을 비웠어요.');
 };
 // account / cloud
 const sheet=document.getElementById('accountSheet'),msg=document.getElementById('authMsg');document.getElementById('accountBtn').onclick=()=>{sheet.classList.add('show');sheet.setAttribute('aria-hidden','false')};document.getElementById('accountClose').onclick=()=>{sheet.classList.remove('show');msg.textContent=''};sheet.onclick=e=>{if(e.target===sheet){sheet.classList.remove('show');msg.textContent=''}};
