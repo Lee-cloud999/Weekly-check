@@ -321,21 +321,39 @@ async function migrateAndPull(user){
   setSync('처음 동기화 중…');
   const col=collection(db,'users',user.uid,'weekly_check');
   /*
-    v42 startup-sync safety:
+    v43 startup-sync safety:
     앱 시작 때 localStorage에만 남아 있는 주차를 Firebase로 자동 업로드하지 않는다.
     이전 복제 버그가 만든 오래된 모바일 로컬 복제본이 로그인/실행만으로
     서버에 다시 살아나는 경로를 차단한다.
     정상 편집은 save()/cloudSave()와 Firestore의 오프라인 큐가 담당한다.
   */
   const snap=await getDocs(col);
+  const serverKeys=new Set();
+  snap.forEach(x=>serverKeys.add(x.id));
+
   remoteApplying=true;
+
+  // v43: 서버에서 직접 확인된 목록일 때만,
+  // 서버에 이미 없는 주차의 오래된 기기 로컬 복제본을 제거한다.
+  // (다른 기기에서 삭제한 기록이 이 기기에서 다시 보이는 문제 방지)
+  if(!snap.metadata.fromCache){
+    Object.keys(localStorage)
+      .filter(k=>k.startsWith(KEY))
+      .forEach(k=>{
+        const wk=k.slice(KEY.length);
+        if(!serverKeys.has(wk))localStorage.removeItem(k);
+      });
+  }
+
+  // 서버에 실제로 존재하는 주차만 로컬에 반영한다.
   snap.forEach(x=>{
     const d=fromCloud(x.data());
     localSet(x.id,d);
   });
+
   remoteApplying=false;
   render();
-  setSync('동기화됨',true);
+  setSync(snap.metadata.fromCache?'연결 확인 중…':'동기화됨',!snap.metadata.fromCache);
 }
 function listenCloud(user){if(unsubscribeCloud)unsubscribeCloud();unsubscribeCloud=onSnapshot(collection(db,'users',user.uid,'weekly_check'),{includeMetadataChanges:true},snap=>{remoteApplying=true;snap.docChanges().forEach(ch=>{let d=fromCloud(ch.doc.data());if(ch.type==='removed')localStorage.removeItem(KEY+ch.doc.id);else localSet(ch.doc.id,d)});remoteApplying=false;if(document.getElementById('archive').classList.contains('active'))renderArchive();else if(isEditing||document.activeElement?.matches('input,textarea'))pendingCloudRender=true;else render();setSync(snap.metadata.fromCache?'연결 확인 중…':'동기화됨',!snap.metadata.fromCache)},e=>{console.error('Firestore listen error',e);showFirebaseError('실시간 수신(onSnapshot)',e);setSync(navigator.onLine?'동기화 오류 · 기기에 저장됨':'오프라인 · 기기에 저장됨')})}
 onAuthStateChanged(auth,async user=>{currentUser=user;document.getElementById('signedOutBox').classList.toggle('hidden-auth',!!user);document.getElementById('signedInBox').classList.toggle('hidden-auth',!user);document.getElementById('userEmail').textContent=user?.email||'';if(user){try{clearFirebaseError();await migrateAndPull(user);listenCloud(user)}catch(e){console.error('Firestore initial sync error',e);showFirebaseError('초기 동기화(getDocs/setDoc)',e);setSync(navigator.onLine?'동기화 오류 · 기기에 저장됨':'오프라인 · 기기에 저장됨')}}else{if(unsubscribeCloud){unsubscribeCloud();unsubscribeCloud=null}setSync('이 기기에 저장됨')}});
