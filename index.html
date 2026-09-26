@@ -32,9 +32,41 @@ html,body,body *,button,input,textarea,select,option,label,span,div,p,b,strong,s
 #archiveSearchClear{display:none;position:absolute;right:9px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#aaa49a;font-size:18px;padding:4px}
 .filter[data-filter="done"]{top:-1px}
 .cleanup-next{display:block;margin:18px auto 12px;border:0;background:transparent;color:#8c7765;font-size:9px;text-decoration:underline;text-underline-offset:3px}
+
+.archive-weeknav{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;margin:8px 0 12px}
+.archive-arrow{border:0;background:transparent;font-size:28px;color:#777}
+.archive-range{text-align:center;font-size:14px;font-weight:650}
+.archive-focus{border:1px solid #ddd;border-radius:11px;padding:9px 11px;margin-bottom:10px}
+.archive-focus-label{display:block;font:600 9px 'Maru Buri',serif;letter-spacing:1.5px;color:#999;margin-bottom:3px}
+.archive-focus-text{font-size:14px;min-height:20px;color:#444}
+.archive-week{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #d8d8d8;border-left:1px solid #d8d8d8}
+.archive-day{min-height:116px;border-right:1px solid #d8d8d8;border-bottom:1px solid #d8d8d8;padding:8px 8px 7px}
+.archive-day.sun{grid-column:1/3;min-height:94px}
+.archive-dayhead{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.archive-task{display:flex;align-items:flex-start;gap:6px;margin:5px 0;font-size:11px;line-height:1.45}
+.archive-mark{width:15px;height:15px;border:1px solid #bcbcbc;border-radius:4px;flex:none;display:grid;place-items:center;font:bold 10px/1 'Maru Buri',serif}
+.archive-mark.done{background:#486b52;border-color:#486b52;color:#fff}
+.archive-mark.undone{color:#666}
+.archive-task.done .archive-task-text{text-decoration:line-through;color:#999}
+.archive-task.undone .archive-task-text{color:#777}
+.archive-empty-task{color:#bbb;font-size:10px;margin-top:8px}
+.archive-bottom{display:grid;grid-template-columns:1fr 1fr;border:1px solid #d8d8d8;border-top:0}
+.archive-panel{min-height:100px;padding:9px}
+.archive-panel:first-child{border-right:1px solid #d8d8d8}
+.archive-panel h3{font:600 9px 'Maru Buri',serif;letter-spacing:1.2px;margin:0 0 6px;color:#777}
+.archive-note{white-space:pre-wrap;font-size:11px;line-height:1.7;color:#555}
+.archive-empty-week{text-align:center;color:#aaa;font-size:11px;padding:8px 0 0}
+
 </style></head><body><main class="app">
-<section class="planner" id="planner"><div class="syncbar"><span class="syncdot" id="syncDot"></span><span id="syncText">이 기기에 저장됨</span><button class="account-btn" id="accountBtn">계정 · 백업</button></div><div class="eyebrow">WEEKLY PLANNER</div><div class="title">WEEKLY CHECK</div><div class="rule"></div><div class="weeknav"><button class="arrow" id="prev">‹</button><div class="range" id="range"></div><button class="arrow" id="next">›</button></div><div class="focus"><label>THIS WEEK'S FOCUS</label><input id="focus" name="weekly-focus" autocomplete="off" autocapitalize="sentences" placeholder="이번 주 가장 중요한 한 가지"></div><section class="week" id="week"></section><section class="bottom"><div class="panel"><h3>THIS WEEK</h3><textarea id="thisweek" name="weekly-summary" class="lined" autocomplete="off" placeholder="이번 주 할 일"></textarea></div><div class="panel"><h3>NOTES</h3><textarea id="notes" name="weekly-notes" class="lined" autocomplete="off" placeholder="메모"></textarea></div></section><div class="footer">A WEEK AT A GLANCE</div><div style="text-align:center;margin:9px 0 0;font:9px Maru Buri,serif;color:#aaa">주차별 저장 보호 ON</div><button class="cleanup-next" id="cleanupNextWeek" type="button">복제된 다음 주 기록 비우기</button></section>
-<section class="archive" id="archive"><div class="eyebrow">WEEKLY PLANNER</div><div class="archive-title">ARCHIVE</div><div class="archive-sub">한 주 한 주, 적어둔 일들을 모아봅니다.</div><div class="rule"></div><div class="filters"><button class="filter active" data-filter="all">전체</button><button class="filter" data-filter="done">한 일</button><button class="filter" data-filter="undone">미완성</button></div><div class="archive-search"><span class="search-icon">⌕</span><input id="archiveSearch" type="search" autocomplete="off" placeholder="기록 검색"><button id="archiveSearchClear" type="button" aria-label="검색어 지우기">×</button></div><div id="records"></div></section>
+<section class="planner" id="planner"><div class="syncbar"><span class="syncdot" id="syncDot"></span><span id="syncText">이 기기에 저장됨</span><button class="account-btn" id="accountBtn">계정 · 백업</button></div><div class="eyebrow">WEEKLY PLANNER</div><div class="title">WEEKLY CHECK</div><div class="rule"></div><div class="weeknav"><button class="arrow" id="prev">‹</button><div class="range" id="range"></div><button class="arrow" id="next">›</button></div><div class="focus"><label>THIS WEEK'S FOCUS</label><input id="focus" name="weekly-focus" autocomplete="off" autocapitalize="sentences" placeholder="이번 주 가장 중요한 한 가지"></div><section class="week" id="week"></section><section class="bottom"><div class="panel"><h3>THIS WEEK</h3><textarea id="thisweek" name="weekly-summary" class="lined" autocomplete="off" placeholder="이번 주 할 일"></textarea></div><div class="panel"><h3>NOTES</h3><textarea id="notes" name="weekly-notes" class="lined" autocomplete="off" placeholder="메모"></textarea></div></section><div class="footer">A WEEK AT A GLANCE</div><button class="cleanup-next" id="cleanupNextWeek" type="button">복제된 다음 주 기록 비우기</button></section>
+<section class="archive" id="archive">
+<div class="eyebrow">WEEKLY PLANNER</div>
+<div class="archive-title">ARCHIVE</div>
+<div class="archive-sub">지나간 한 주를 그대로 펼쳐봅니다.</div>
+<div class="rule"></div>
+<div class="archive-weeknav"><button class="archive-arrow" id="archivePrev" type="button">‹</button><div class="archive-range" id="archiveRange"></div><button class="archive-arrow" id="archiveNext" type="button">›</button></div>
+<div id="archiveWeekView"></div>
+</section>
 </main><div class="account-sheet" id="accountSheet" aria-hidden="true"><section class="account-panel"><button class="account-close" id="accountClose" aria-label="닫기">×</button><h3>동기화 · 백업</h3><p>같은 계정으로 로그인하면 PC, iPad, 휴대폰에서 같은 주간 계획을 사용할 수 있어요. 로그인하지 않아도 이 기기에는 계속 저장됩니다.</p><div id="signedOutBox"><input class="auth-input" id="authEmail" type="email" autocomplete="email" placeholder="이메일"><input class="auth-input" id="authPassword" type="password" autocomplete="current-password" placeholder="비밀번호"><div class="auth-actions"><button class="primary" id="loginBtn">로그인</button><button id="signupBtn">새 계정 만들기</button></div></div><div id="signedInBox" class="hidden-auth"><div class="account-user"><b id="userEmail"></b><p style="margin-top:5px">Firebase에 자동 동기화 중</p></div><div class="backup-actions"><button id="backupBtn">지금 백업</button><button id="restoreBtn">최근 백업 복원</button><button id="logoutBtn">로그아웃</button></div></div><p class="auth-msg" id="authMsg"></p>
 <div id="firebaseDiag" style="display:none;margin-top:12px;padding:11px 12px;border:1px solid #e2d8d2;border-radius:12px;background:#fffaf7;font:11px/1.55 'Maru Buri',serif;color:#765f58;white-space:pre-wrap;word-break:break-word"></div></section></div><nav class="nav"><button id="navWeek" class="active"><b>□</b>이번 주</button><button id="navArchive"><b>≡</b>보관함</button></nav>
 <script type="module">
@@ -172,22 +204,79 @@ document.getElementById('next').onclick=()=>{
  offset++;
  render();
 };
-function archiveData(){let out=[];for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(!k.startsWith(KEY))continue;let wk=k.slice(KEY.length),d=load(wk);(d.days||[]).forEach((tasks,di)=>(tasks||[]).forEach(t=>{if((t.text||'').trim()){let date=new Date(wk+'T00:00:00');date.setDate(date.getDate()+di);out.push({date:ymd(date),text:t.text,status:+t.status||0})}}))}return out.sort((a,b)=>b.date.localeCompare(a.date))}
-function renderArchive(){
- let q=(document.getElementById('archiveSearch')?.value||'').trim().toLowerCase();
- let rows=archiveData().filter(x=>(filter==='all'||(filter==='done'&&x.status===1)||(filter==='undone'&&x.status===2))&&(!q||x.text.toLowerCase().includes(q))),
- box=document.getElementById('records');
- if(!rows.length){box.innerHTML='<div class="empty">아직 모아볼 기록이 없어요.</div>';return}
- let groups={};rows.forEach(r=>(groups[r.date]??=[]).push(r));
- box.innerHTML=Object.entries(groups).map(([date,items])=>{
-   let dd=new Date(date+'T00:00:00'),label=`${dd.getFullYear()}년 ${dd.getMonth()+1}월 ${dd.getDate()}일 · ${['일','월','화','수','목','금','토'][dd.getDay()]}요일`;
-   return `<div class="record"><div class="record-date">${label}</div>${items.map(x=>`<div class="record-task"><span class="mini ${x.status===2?'undone':x.status===0?'open':''}">${x.status===1?'✓':x.status===2?'−':''}</span><span>${esc(x.text)}</span></div>`).join('')}</div>`
- }).join('')
+
+let archiveWeekKey='';
+function localWeekKeys(){
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith(KEY)){
+      const wk=k.slice(KEY.length),d=load(wk);
+      if(hasContent(d))keys.push(wk);
+    }
+  }
+  return [...new Set(keys)].sort();
 }
-document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));renderArchive()});const archiveSearch=document.getElementById('archiveSearch'),archiveSearchClear=document.getElementById('archiveSearchClear');
-archiveSearch.addEventListener('input',()=>{archiveSearchClear.style.display=archiveSearch.value?'block':'none';renderArchive()});
-archiveSearchClear.onclick=()=>{archiveSearch.value='';archiveSearchClear.style.display='none';archiveSearch.focus();renderArchive()};function show(which){save();sessionStorage.setItem(VIEW,which);document.getElementById('planner').classList.toggle('hidden',which!=='week');document.getElementById('archive').classList.toggle('active',which==='archive');document.getElementById('navWeek').classList.toggle('active',which==='week');document.getElementById('navArchive').classList.toggle('active',which==='archive');if(which==='archive')renderArchive()}
-document.getElementById('navWeek').onclick=()=>show('week');document.getElementById('navArchive').onclick=()=>show('archive');
+function archiveInitialKey(){
+  const keys=localWeekKeys(),todayKey=weekKey(monday());
+  const past=keys.filter(k=>k<todayKey);
+  return past.length?past[past.length-1]:(keys.length?keys[keys.length-1]:todayKey);
+}
+function archiveMove(delta){
+  const keys=localWeekKeys();
+  if(!keys.length)return;
+  let i=keys.indexOf(archiveWeekKey);
+  if(i<0)i=keys.length-1;
+  i=Math.max(0,Math.min(keys.length-1,i+delta));
+  archiveWeekKey=keys[i];
+  renderArchive();
+}
+function archiveTaskHTML(t){
+  const st=+t.status||0;
+  const c=st===1?'done':st===2?'undone':'';
+  return `<div class="archive-task ${c}"><span class="archive-mark ${c}">${st===1?'✓':st===2?'−':''}</span><span class="archive-task-text">${esc(t.text||'')}</span></div>`;
+}
+function renderArchive(){
+  if(!archiveWeekKey)archiveWeekKey=archiveInitialKey();
+  const d=load(archiveWeekKey),m=new Date(archiveWeekKey+'T00:00:00'),end=new Date(m);end.setDate(m.getDate()+6);
+  document.getElementById('archiveRange').textContent=`${m.getMonth()+1}.${m.getDate()} — ${end.getMonth()+1}.${end.getDate()}`;
+  const keys=localWeekKeys(),idx=keys.indexOf(archiveWeekKey);
+  document.getElementById('archivePrev').disabled=idx<=0;
+  document.getElementById('archiveNext').disabled=idx<0||idx>=keys.length-1;
+  document.getElementById('archivePrev').style.opacity=idx<=0?'.25':'1';
+  document.getElementById('archiveNext').style.opacity=(idx<0||idx>=keys.length-1)?'.25':'1';
+
+  if(!hasContent(d)){
+    document.getElementById('archiveWeekView').innerHTML='<div class="empty">아직 보관된 주간 기록이 없어요.</div>';
+    return;
+  }
+  let days='';
+  for(let i=0;i<7;i++){
+    const date=new Date(m);date.setDate(m.getDate()+i);
+    const tasks=((d.days||[])[i]||[]).filter(t=>(t.text||'').trim());
+    days+=`<div class="archive-day ${i===6?'sun':''}"><div class="archive-dayhead"><span class="dow">${names[i]}</span><span class="date">${date.getMonth()+1}.${date.getDate()}</span></div>${tasks.length?tasks.map(archiveTaskHTML).join(''):'<div class="archive-empty-task">기록 없음</div>'}</div>`;
+  }
+  document.getElementById('archiveWeekView').innerHTML=
+    `<div class="archive-focus"><span class="archive-focus-label">THIS WEEK'S FOCUS</span><div class="archive-focus-text">${esc(d.focus||'—')}</div></div>`+
+    `<div class="archive-week">${days}</div>`+
+    `<div class="archive-bottom"><div class="archive-panel"><h3>THIS WEEK</h3><div class="archive-note">${esc(d.thisweek||'—')}</div></div><div class="archive-panel"><h3>NOTES</h3><div class="archive-note">${esc(d.notes||'—')}</div></div></div>`+
+    `<div class="footer">A WEEK AT A GLANCE · READ ONLY</div>`;
+}
+document.getElementById('archivePrev').onclick=()=>archiveMove(-1);
+document.getElementById('archiveNext').onclick=()=>archiveMove(1);
+
+function show(which){
+  save();
+  sessionStorage.setItem(VIEW,which);
+  document.getElementById('planner').classList.toggle('hidden',which!=='week');
+  document.getElementById('archive').classList.toggle('active',which==='archive');
+  document.getElementById('navWeek').classList.toggle('active',which==='week');
+  document.getElementById('navArchive').classList.toggle('active',which==='archive');
+  if(which==='archive'){archiveWeekKey=archiveInitialKey();renderArchive()}
+}
+document.getElementById('navWeek').onclick=()=>show('week');
+document.getElementById('navArchive').onclick=()=>show('archive');
+
 document.getElementById('cleanupNextWeek').onclick=async()=>{
   if(!currentWeekKey){alert('현재 주차를 불러온 뒤 다시 눌러주세요.');return}
   const d=new Date(currentWeekKey+'T00:00:00');
