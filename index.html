@@ -37,11 +37,8 @@ html,body,body *,button,input,textarea,select,option,label,span,div,p,b,strong,s
 .dupdiag-btn{border:1px solid #ddd6cc;background:#fffdf9;border-radius:999px;padding:7px 12px;font:10px 'Maru Buri',serif;color:#766d63}
 .dupdiag{display:none;text-align:left;margin:8px 0 0;padding:12px;border:1px solid #e4dcd2;border-radius:12px;background:#fffaf7;font:10px/1.6 'Maru Buri',serif;color:#625c55;white-space:pre-wrap;word-break:break-word}
 .dupdiag.show{display:block}
-
 </style></head><body><main class="app">
-<section class="planner" id="planner"><div class="syncbar"><span class="syncdot" id="syncDot"></span><span id="syncText">이 기기에 저장됨</span><button class="account-btn" id="accountBtn">계정 · 백업</button></div><div class="eyebrow">WEEKLY PLANNER</div><div class="title">WEEKLY CHECK</div><div class="rule"></div><div class="weeknav"><button class="arrow" id="prev">‹</button><div class="range" id="range"></div><button class="arrow" id="next">›</button></div><div class="focus"><label>THIS WEEK'S FOCUS</label><input id="focus" name="weekly-focus" autocomplete="off" autocapitalize="sentences" placeholder="이번 주 가장 중요한 한 가지"></div><section class="week" id="week"></section><section class="bottom"><div class="panel"><h3>THIS WEEK</h3><textarea id="thisweek" name="weekly-summary" class="lined" autocomplete="off" placeholder="이번 주 할 일"></textarea></div><div class="panel"><h3>NOTES</h3><textarea id="notes" name="weekly-notes" class="lined" autocomplete="off" placeholder="메모"></textarea></div></section><div class="footer">A WEEK AT A GLANCE</div>
-<div class="dupdiag-wrap"><button class="dupdiag-btn" id="dupDiagToggle" type="button">복제 진단 보기</button><div class="dupdiag" id="dupDiag"></div></div>
-<button class="cleanup-next" id="cleanupNextWeek" type="button">복제된 다음 주 기록 비우기</button></section>
+<section class="planner" id="planner"><div class="syncbar"><span class="syncdot" id="syncDot"></span><span id="syncText">이 기기에 저장됨</span><button class="account-btn" id="accountBtn">계정 · 백업</button></div><div class="eyebrow">WEEKLY PLANNER</div><div class="title">WEEKLY CHECK</div><div class="rule"></div><div class="weeknav"><button class="arrow" id="prev">‹</button><div class="range" id="range"></div><button class="arrow" id="next">›</button></div><div class="focus"><label>THIS WEEK'S FOCUS</label><input id="focus" name="weekly-focus" autocomplete="off" autocapitalize="sentences" placeholder="이번 주 가장 중요한 한 가지"></div><section class="week" id="week"></section><section class="bottom"><div class="panel"><h3>THIS WEEK</h3><textarea id="thisweek" name="weekly-summary" class="lined" autocomplete="off" placeholder="이번 주 할 일"></textarea></div><div class="panel"><h3>NOTES</h3><textarea id="notes" name="weekly-notes" class="lined" autocomplete="off" placeholder="메모"></textarea></div></section><div class="footer">A WEEK AT A GLANCE</div><div class="dupdiag-wrap"><button class="dupdiag-btn" id="dupDiagToggle" type="button">복제 진단 보기</button><div class="dupdiag" id="dupDiag"></div></div><button class="cleanup-next" id="cleanupNextWeek" type="button">복제된 다음 주 기록 비우기</button></section>
 <section class="archive" id="archive"><div class="eyebrow">WEEKLY PLANNER</div><div class="archive-title">ARCHIVE</div><div class="archive-sub">한 주 한 주, 적어둔 일들을 모아봅니다.</div><div class="rule"></div><div class="filters"><button class="filter active" data-filter="all">전체</button><button class="filter" data-filter="done">한 일</button><button class="filter" data-filter="undone">미완성</button></div><div class="archive-search"><span class="search-icon">⌕</span><input id="archiveSearch" type="search" autocomplete="off" placeholder="기록 검색"><button id="archiveSearchClear" type="button" aria-label="검색어 지우기">×</button></div><div id="records"></div></section>
 </main><div class="account-sheet" id="accountSheet" aria-hidden="true"><section class="account-panel"><button class="account-close" id="accountClose" aria-label="닫기">×</button><h3>동기화 · 백업</h3><p>같은 계정으로 로그인하면 PC, iPad, 휴대폰에서 같은 주간 계획을 사용할 수 있어요. 로그인하지 않아도 이 기기에는 계속 저장됩니다.</p><div id="signedOutBox"><input class="auth-input" id="authEmail" type="email" autocomplete="email" placeholder="이메일"><input class="auth-input" id="authPassword" type="password" autocomplete="current-password" placeholder="비밀번호"><div class="auth-actions"><button class="primary" id="loginBtn">로그인</button><button id="signupBtn">새 계정 만들기</button></div></div><div id="signedInBox" class="hidden-auth"><div class="account-user"><b id="userEmail"></b><p style="margin-top:5px">Firebase에 자동 동기화 중</p></div><div class="backup-actions"><button id="backupBtn">지금 백업</button><button id="restoreBtn">최근 백업 복원</button><button id="logoutBtn">로그아웃</button></div></div><p class="auth-msg" id="authMsg"></p>
 <div id="firebaseDiag" style="display:none;margin-top:12px;padding:11px 12px;border:1px solid #e2d8d2;border-radius:12px;background:#fffaf7;font:11px/1.55 'Maru Buri',serif;color:#765f58;white-space:pre-wrap;word-break:break-word"></div></section></div><nav class="nav"><button id="navWeek" class="active"><b>□</b>이번 주</button><button id="navArchive"><b>≡</b>보관함</button></nav>
@@ -65,7 +62,7 @@ function blankTasks(){return [{text:'',status:0},{text:'',status:0},{text:'',sta
 function blankData(){return {focus:'',thisweek:'',notes:'',days:Array.from({length:7},blankTasks)}}
 function load(k){try{return JSON.parse(localStorage.getItem(KEY+k))||blankData()}catch(e){return blankData()}}
 function hasContent(d){return !!((d.focus||'').trim()||(d.thisweek||'').trim()||(d.notes||'').trim()||(d.days||[]).some(a=>(a||[]).some(t=>(t.text||'').trim()||t.status)))}
-function localSet(k,d){if(hasContent(d))localStorage.setItem(KEY+k,JSON.stringify(d));else localStorage.removeItem(KEY+k)}
+function localSet(k,d){dupLog('localSet',{key:k,...dupSummary(d),reason:hasContent(d)?'저장':'삭제'});if(hasContent(d))localStorage.setItem(KEY+k,JSON.stringify(d));else localStorage.removeItem(KEY+k)}
 function toCloud(d){
   return {focus:d.focus||'',thisweek:d.thisweek||'',notes:d.notes||'',daysJson:JSON.stringify(d.days||[])};
 }
@@ -78,7 +75,7 @@ function fromCloud(d){
 }
 function collect(){let data=load(currentWeekKey);data.focus=document.getElementById('focus').value;data.thisweek=document.getElementById('thisweek').value;data.notes=document.getElementById('notes').value;data.days=[];document.querySelectorAll('.day').forEach(day=>{let arr=[];day.querySelectorAll('.task').forEach(t=>arr.push({text:t.querySelector('input').value,status:+t.dataset.status||0}));data.days.push(arr)});return data}
 function setSync(text,online=false){document.getElementById('syncText').textContent=text;document.getElementById('syncDot').classList.toggle('online',online)}
-async function cloudSave(k,d){if(!currentUser||remoteApplying)return;setSync('동기화 중…');try{let r=doc(db,'users',currentUser.uid,'weekly_check',k);if(hasContent(d))await setDoc(r,{...toCloud(d),deviceUpdatedAt:Date.now(),updatedAt:serverTimestamp()});else await deleteDoc(r);clearFirebaseError();setSync('동기화됨',true)}catch(e){console.error('Firestore save error',e);showFirebaseError('저장(setDoc/deleteDoc)',e);setSync(navigator.onLine?'동기화 오류 · 기기에 저장됨':'오프라인 · 기기에 저장됨')}}
+async function cloudSave(k,d){dupLog('cloudSave 요청',{key:k,...dupSummary(d),reason:remoteApplying?'remoteApplying=true':''});if(!currentUser||remoteApplying)return;setSync('동기화 중…');try{let r=doc(db,'users',currentUser.uid,'weekly_check',k);if(hasContent(d))await setDoc(r,{...toCloud(d),deviceUpdatedAt:Date.now(),updatedAt:serverTimestamp()});else await deleteDoc(r);clearFirebaseError();setSync('동기화됨',true)}catch(e){console.error('Firestore save error',e);showFirebaseError('저장(setDoc/deleteDoc)',e);setSync(navigator.onLine?'동기화 오류 · 기기에 저장됨':'오프라인 · 기기에 저장됨')}}
 function save(){dupDiagState.saveCount++;dupDiagState.lastSave=new Date().toLocaleTimeString('ko-KR');if(!currentWeekKey)return;let k=currentWeekKey,d=collect();localSet(k,d);clearTimeout(saveTimer);saveTimer=setTimeout(()=>cloudSave(k,d),350)}
 function render(){dupDiagState.renderCount++;let m=monday(),end=new Date(m);end.setDate(m.getDate()+6);currentWeekKey=weekKey(m);let data=load(currentWeekKey);document.getElementById('range').textContent=`${m.getMonth()+1}.${m.getDate()} — ${end.getMonth()+1}.${end.getDate()}`;document.getElementById('focus').value=data.focus||'';document.getElementById('thisweek').value=data.thisweek||'';document.getElementById('notes').value=data.notes||'';let today=ymd(new Date()),html='';for(let i=0;i<7;i++){let d=new Date(m);d.setDate(m.getDate()+i);let is=ymd(d)===today,tasks=(data.days&&data.days[i])||blankTasks();html+=`<div class="day ${is?'today':''} ${i===6?'sun':''}" data-i="${i}"><div class="dayhead"><span class="dow">${names[i]}</span><span class="date">${d.getMonth()+1}.${d.getDate()}</span>${is?'<span class="badge">TODAY</span>':''}</div><div class="tasks">${tasks.map(taskRow).join('')}</div><button class="add">＋</button></div>`}document.getElementById('week').innerHTML=html;bind()}
 function taskRow(t={text:'',status:0}){let st=+t.status||0,c=st===1?'done':st===2?'undone':'';return `<div class="task ${c}" data-status="${st}"><button class="swipe-delete" type="button" aria-label="할 일 삭제">삭제</button><div class="task-main"><button class="check ${c}" type="button">${st===1?'✓':st===2?'−':''}</button><input type="text" name="weekly-planner-task" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" value="${esc(t.text||'')}"></div></div>`}
@@ -135,20 +132,24 @@ function editingEnd(){isEditing=false;if(pendingCloudRender){pendingCloudRender=
   el.addEventListener('compositionend',()=>{save();});
 });function saveNow(){if(!currentWeekKey)return;clearTimeout(saveTimer);let k=currentWeekKey,d=collect();localSet(k,d);cloudSave(k,d)}
 document.getElementById('prev').onclick=()=>{
- const oldKey=currentWeekKey,oldData=collect();
+ const oldKey=currentWeekKey,oldData=collect(); const beforeOffset=offset;
+ dupLog('주 이동 시작',{from:oldKey,to:weekKey((()=>{let d=monday();d.setDate(d.getDate()-7);return d})()),...dupSummary(oldData),reason:'이전 주'});
  clearTimeout(saveTimer);
  localSet(oldKey,oldData);
  cloudSave(oldKey,oldData);
  offset--;
  render();
+ dupLog('주 이동 완료',{from:oldKey,to:currentWeekKey,reason:'이전 주'});
 };
 document.getElementById('next').onclick=()=>{
- const oldKey=currentWeekKey,oldData=collect();
+ const oldKey=currentWeekKey,oldData=collect(); const beforeOffset=offset;
+ dupLog('주 이동 시작',{from:oldKey,to:weekKey((()=>{let d=monday();d.setDate(d.getDate()+7);return d})()),...dupSummary(oldData),reason:'다음 주'});
  clearTimeout(saveTimer);
  localSet(oldKey,oldData);
  cloudSave(oldKey,oldData);
  offset++;
  render();
+ dupLog('주 이동 완료',{from:oldKey,to:currentWeekKey,reason:'다음 주'});
 };
 function archiveData(){let out=[];for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(!k.startsWith(KEY))continue;let wk=k.slice(KEY.length),d=load(wk);(d.days||[]).forEach((tasks,di)=>(tasks||[]).forEach(t=>{if((t.text||'').trim()){let date=new Date(wk+'T00:00:00');date.setDate(date.getDate()+di);out.push({date:ymd(date),text:t.text,status:+t.status||0})}}))}return out.sort((a,b)=>b.date.localeCompare(a.date))}
 function renderArchive(){
@@ -190,104 +191,40 @@ document.getElementById('cleanupNextWeek').onclick=async()=>{
   alert('복제된 다음 주 기록을 비웠어요.');
 };
 
-// v38 read-only duplicate diagnostics
-function diagItems(d){
-  const out=[];
-  (d?.days||[]).forEach((tasks,di)=>(tasks||[]).forEach((t,ti)=>{
-    const text=(t?.text||'').trim();
-    if(text)out.push({di,ti,text,status:+t.status||0});
-  }));
-  return out;
+
+// v39 duplicate black box — session only, never changes planner records
+const dupEventLog=[];
+function dupLog(type,detail={}){
+  const row={time:new Date().toLocaleTimeString('ko-KR'),type,...detail};
+  dupEventLog.push(row); if(dupEventLog.length>80)dupEventLog.shift();
+  if(document.getElementById('dupDiag')?.classList.contains('show'))refreshDuplicateDiagnostics();
 }
-function diagDuplicates(items){
-  const m=new Map();
-  items.forEach(t=>{
-    const key=`${t.di}|${t.text.toLowerCase()}|${t.status}`;
-    m.set(key,(m.get(key)||0)+1);
-  });
-  return [...m.entries()].filter(([,count])=>count>1);
-}
-function diagComparable(d){
-  return JSON.stringify(toCloud(d||blankData()));
-}
+function dupSummary(d){const items=diagItems(d);return {items:items.length,focus:!!(d?.focus||'').trim(),thisweek:!!(d?.thisweek||'').trim(),notes:!!(d?.notes||'').trim()}}
+
+function diagItems(d){const out=[];(d?.days||[]).forEach((tasks,di)=>(tasks||[]).forEach((t,ti)=>{const text=(t?.text||'').trim();if(text)out.push({di,ti,text,status:+t.status||0})}));return out}
+function diagDuplicates(items){const m=new Map();items.forEach(t=>{const key=`${t.di}|${t.text.toLowerCase()}|${t.status}`;m.set(key,(m.get(key)||0)+1)});return [...m.entries()].filter(([,n])=>n>1)}
+function diagComparable(d){return JSON.stringify(toCloud(d||blankData()))}
 async function refreshDuplicateDiagnostics(){
-  const box=document.getElementById('dupDiag');
-  if(!box||!box.classList.contains('show'))return;
-
-  const cur=currentWeekKey||weekKey(monday());
-  const base=new Date(cur+'T00:00:00');
-  const weekKeys=[-1,0,1].map(n=>{
-    const d=new Date(base); d.setDate(d.getDate()+n*7); return ymd(d);
-  });
-
-  const remote=new Map();
-  let cloudError='';
-  if(currentUser){
-    try{
-      const snap=await getDocs(collection(db,'users',currentUser.uid,'weekly_check'));
-      snap.forEach(x=>remote.set(x.id,fromCloud(x.data())));
-    }catch(e){
-      cloudError=e?.code||e?.message||'조회 오류';
-    }
-  }
-
-  const lines=[
-    'WEEKLY CHECK · 복제 진단',
-    `현재 주: ${cur}`,
-    `렌더링 ${dupDiagState.renderCount}회 · 저장 요청 ${dupDiagState.saveCount}회 · Firebase 수신 ${dupDiagState.cloudCount}회`,
-    `마지막 저장 ${dupDiagState.lastSave} · 마지막 수신 ${dupDiagState.lastCloud}`,
-    ''
-  ];
-
-  for(const k of weekKeys){
-    const local=load(k);
-    const localItems=diagItems(local);
-    const localDup=diagDuplicates(localItems);
-
-    let remoteCount=currentUser?'0':'로그인 필요';
-    let remoteDup=currentUser?'0':'-';
-    let compare=currentUser?'서버 기록 없음':'-';
-
-    if(currentUser && remote.has(k)){
-      const rd=remote.get(k);
-      const remoteItems=diagItems(rd);
-      remoteCount=String(remoteItems.length);
-      remoteDup=String(diagDuplicates(remoteItems).length);
-      compare=diagComparable(local)===diagComparable(rd)?'같음':'다름 ⚠️';
-    }else if(currentUser && localItems.length){
-      compare='로컬만 있음 ⚠️';
-    }
-
-    lines.push(`${k===cur?'▶':' '} ${k}`);
-    lines.push(`  로컬 ${localItems.length}개 · Firebase ${remoteCount}개`);
-    lines.push(`  로컬 내부중복 ${localDup.length} · 서버 내부중복 ${remoteDup} · 로컬/서버 ${compare}`);
-    localDup.slice(0,5).forEach(([key,count])=>{
-      lines.push(`  ↳ 같은 요일·문구·상태 ${count}× : ${key.split('|')[1]}`);
-    });
-  }
-
-  const currentData=load(cur);
-  if(hasContent(currentData)){
-    weekKeys.filter(k=>k!==cur).forEach(k=>{
-      const other=load(k);
-      if(hasContent(other)&&diagComparable(other)===diagComparable(currentData)){
-        lines.push(`⚠️ ${k} 기록이 현재 주와 통째로 동일합니다.`);
-      }
-    });
-  }
-
-  if(cloudError)lines.push(`⚠️ Firebase 진단 조회 오류: ${cloudError}`);
-  lines.push('','※ 진단 기능은 기록을 읽기만 하며 수정·삭제하지 않습니다.');
-  box.textContent=lines.join('\\n');
+ const box=document.getElementById('dupDiag');if(!box||!box.classList.contains('show'))return;
+ const cur=currentWeekKey||weekKey(monday()),base=new Date(cur+'T00:00:00'),weekKeys=[-1,0,1].map(n=>{const d=new Date(base);d.setDate(d.getDate()+n*7);return ymd(d)});
+ const remote=new Map();let cloudError='';
+ if(currentUser){try{const snap=await getDocs(collection(db,'users',currentUser.uid,'weekly_check'));snap.forEach(x=>remote.set(x.id,fromCloud(x.data())))}catch(e){cloudError=e?.code||e?.message||'조회 오류'}}
+ const lines=['WEEKLY CHECK · 복제 진단',`현재 주: ${cur}`,`렌더링 ${dupDiagState.renderCount}회 · 저장 요청 ${dupDiagState.saveCount}회 · Firebase 수신 ${dupDiagState.cloudCount}회`,`마지막 저장 ${dupDiagState.lastSave} · 마지막 수신 ${dupDiagState.lastCloud}`,''];
+ for(const k of weekKeys){const local=load(k),li=diagItems(local),ld=diagDuplicates(li);let rc=currentUser?'0':'로그인 필요',rd=currentUser?'0':'-',cmp=currentUser?'서버 기록 없음':'-';if(currentUser&&remote.has(k)){const x=remote.get(k),ri=diagItems(x);rc=String(ri.length);rd=String(diagDuplicates(ri).length);cmp=diagComparable(local)===diagComparable(x)?'같음':'다름 ⚠️'}else if(currentUser&&li.length)cmp='로컬만 있음 ⚠️';lines.push(`${k===cur?'▶':' '} ${k}`);lines.push(`  로컬 ${li.length}개 · Firebase ${rc}개`);lines.push(`  로컬 내부중복 ${ld.length} · 서버 내부중복 ${rd} · 로컬/서버 ${cmp}`)}
+ if(cloudError)lines.push(`⚠️ Firebase 진단 조회 오류: ${cloudError}`);
+ lines.push('','— 최근 동작 블랙박스 —');
+ if(!dupEventLog.length)lines.push('아직 기록된 동작이 없습니다.');
+ else dupEventLog.slice(-18).forEach(e=>{
+   let extra='';
+   if(e.from||e.to)extra+=` ${e.from||'-'} → ${e.to||'-'}`;
+   if(e.key)extra+=` key=${e.key}`;
+   if(e.items!==undefined)extra+=` 항목=${e.items}`;
+   if(e.reason)extra+=` · ${e.reason}`;
+   lines.push(`${e.time} · ${e.type}${extra}`);
+ });
+ lines.push('','※ 진단/블랙박스는 세션 메모리만 사용하며 기록을 수정·삭제하지 않습니다.');box.textContent=lines.join('\\n')
 }
-
-document.getElementById('dupDiagToggle').onclick=()=>{
-  const box=document.getElementById('dupDiag');
-  const open=!box.classList.contains('show');
-  box.classList.toggle('show',open);
-  document.getElementById('dupDiagToggle').textContent=open?'복제 진단 닫기':'복제 진단 보기';
-  if(open)refreshDuplicateDiagnostics();
-};
+document.getElementById('dupDiagToggle').onclick=()=>{const box=document.getElementById('dupDiag'),open=!box.classList.contains('show');box.classList.toggle('show',open);document.getElementById('dupDiagToggle').textContent=open?'복제 진단 닫기':'복제 진단 보기';if(open)refreshDuplicateDiagnostics()};
 
 // account / cloud
 const sheet=document.getElementById('accountSheet'),msg=document.getElementById('authMsg');document.getElementById('accountBtn').onclick=()=>{sheet.classList.add('show');sheet.setAttribute('aria-hidden','false')};document.getElementById('accountClose').onclick=()=>{sheet.classList.remove('show');msg.textContent=''};sheet.onclick=e=>{if(e.target===sheet){sheet.classList.remove('show');msg.textContent=''}};
@@ -307,7 +244,7 @@ function clearFirebaseError(){
 function authError(e){let c=e?.code||'';if(c.includes('invalid-credential'))return '이메일 또는 비밀번호를 확인해주세요.';if(c.includes('email-already-in-use'))return '이미 사용 중인 이메일이에요.';if(c.includes('weak-password'))return '비밀번호는 6자 이상으로 만들어주세요.';if(c.includes('invalid-email'))return '이메일 형식을 확인해주세요.';return '처리하지 못했어요. 잠시 후 다시 시도해주세요.'}
 document.getElementById('loginBtn').onclick=async()=>{msg.textContent='로그인 중…';try{await signInWithEmailAndPassword(auth,document.getElementById('authEmail').value.trim(),document.getElementById('authPassword').value);msg.textContent=''}catch(e){msg.textContent=authError(e)}};document.getElementById('signupBtn').onclick=async()=>{msg.textContent='계정 만드는 중…';try{await createUserWithEmailAndPassword(auth,document.getElementById('authEmail').value.trim(),document.getElementById('authPassword').value);msg.textContent='계정을 만들었어요.'}catch(e){msg.textContent=authError(e)}};document.getElementById('logoutBtn').onclick=()=>signOut(auth);
 async function migrateAndPull(user){setSync('처음 동기화 중…');const col=collection(db,'users',user.uid,'weekly_check');const snap=await getDocs(col),remote=new Map();snap.forEach(d=>remote.set(d.id,d.data()));for(const k of Object.keys(localStorage).filter(k=>k.startsWith(KEY))){let wk=k.slice(KEY.length);if(!remote.has(wk)){let d=load(wk);if(hasContent(d))await setDoc(doc(col,wk),{...toCloud(d),deviceUpdatedAt:Date.now(),updatedAt:serverTimestamp()})}}const s2=await getDocs(col);remoteApplying=true;s2.forEach(x=>{let d=fromCloud(x.data());localSet(x.id,d)});remoteApplying=false;render();setSync('동기화됨',true)}
-function listenCloud(user){if(unsubscribeCloud)unsubscribeCloud();unsubscribeCloud=onSnapshot(collection(db,'users',user.uid,'weekly_check'),{includeMetadataChanges:true},snap=>{dupDiagState.cloudCount++;dupDiagState.lastCloud=new Date().toLocaleTimeString('ko-KR');remoteApplying=true;snap.docChanges().forEach(ch=>{let d=fromCloud(ch.doc.data());if(ch.type==='removed')localStorage.removeItem(KEY+ch.doc.id);else localSet(ch.doc.id,d)});remoteApplying=false;if(document.getElementById('archive').classList.contains('active'))renderArchive();else if(isEditing||document.activeElement?.matches('input,textarea'))pendingCloudRender=true;else render();setSync(snap.metadata.fromCache?'연결 확인 중…':'동기화됨',!snap.metadata.fromCache)},e=>{console.error('Firestore listen error',e);showFirebaseError('실시간 수신(onSnapshot)',e);setSync(navigator.onLine?'동기화 오류 · 기기에 저장됨':'오프라인 · 기기에 저장됨')})}
+function listenCloud(user){if(unsubscribeCloud)unsubscribeCloud();unsubscribeCloud=onSnapshot(collection(db,'users',user.uid,'weekly_check'),{includeMetadataChanges:true},snap=>{dupDiagState.cloudCount++;dupDiagState.lastCloud=new Date().toLocaleTimeString('ko-KR');remoteApplying=true;snap.docChanges().forEach(ch=>{let d=fromCloud(ch.doc.data());dupLog('Firebase 수신',{key:ch.doc.id,...dupSummary(d),reason:ch.type});if(ch.type==='removed')localStorage.removeItem(KEY+ch.doc.id);else localSet(ch.doc.id,d)});remoteApplying=false;if(document.getElementById('archive').classList.contains('active'))renderArchive();else if(isEditing||document.activeElement?.matches('input,textarea'))pendingCloudRender=true;else render();setSync(snap.metadata.fromCache?'연결 확인 중…':'동기화됨',!snap.metadata.fromCache)},e=>{console.error('Firestore listen error',e);showFirebaseError('실시간 수신(onSnapshot)',e);setSync(navigator.onLine?'동기화 오류 · 기기에 저장됨':'오프라인 · 기기에 저장됨')})}
 onAuthStateChanged(auth,async user=>{currentUser=user;document.getElementById('signedOutBox').classList.toggle('hidden-auth',!!user);document.getElementById('signedInBox').classList.toggle('hidden-auth',!user);document.getElementById('userEmail').textContent=user?.email||'';if(user){try{clearFirebaseError();await migrateAndPull(user);listenCloud(user)}catch(e){console.error('Firestore initial sync error',e);showFirebaseError('초기 동기화(getDocs/setDoc)',e);setSync(navigator.onLine?'동기화 오류 · 기기에 저장됨':'오프라인 · 기기에 저장됨')}}else{if(unsubscribeCloud){unsubscribeCloud();unsubscribeCloud=null}setSync('이 기기에 저장됨')}});
 function allLocal(){let o={};Object.keys(localStorage).filter(k=>k.startsWith(KEY)).forEach(k=>{let d=load(k.slice(KEY.length));if(hasContent(d))o[k.slice(KEY.length)]=d});return o}
 document.getElementById('backupBtn').onclick=async()=>{if(!currentUser)return;msg.textContent='백업 중…';try{let records=allLocal(),id=new Date().toISOString().replace(/[:.]/g,'-');await setDoc(doc(db,'users',currentUser.uid,'weekly_check_backups',id),{createdAt:serverTimestamp(),deviceCreatedAt:Date.now(),recordsJson:JSON.stringify(records)});msg.textContent=`백업 완료 · ${Object.keys(records).length}주 기록`}catch(e){msg.textContent='백업하지 못했어요.'}};
