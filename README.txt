@@ -1,16 +1,1 @@
-WEEKLY CHECK PWA
-
-GitHub 저장소에 아래 파일들을 모두 같은 최상위 폴더에 업로드하세요.
-- index.html
-- manifest.webmanifest
-- service-worker.js
-- icon-192.png
-- icon-512.png
-
-GitHub Pages: Settings > Pages > Deploy from a branch > main / (root)
-
-Firebase:
-- 기존 maeum-jogak2 프로젝트의 이메일/비밀번호 Authentication 사용
-- Firestore 경로: users/{uid}/weekly_check/{weekStart}
-- 백업 경로: users/{uid}/weekly_check_backups/{backupId}
-- 기존 Firestore 규칙(users/{userId}/{document=**})과 호환됩니다.
+v36 진단 방식 롤백. service-worker.js만 교체한 뒤 Safari 새로고침을 두 번 해주세요. 기존 기록 데이터는 건드리지 않습니다.
